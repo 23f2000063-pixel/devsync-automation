@@ -1,1 +1,40 @@
+name: Daily Automated Commit
+
+# This section tells GitHub WHEN to run the script
+on:
+  schedule:
+    # "0 12 * * *" is Cron Syntax. It means:
+    # Minute: 0, Hour: 12 (Noon UTC), Day: Every, Month: Every, Year: Every
+    - cron: '0 12 * * *'
+  
+  # This magic word allows us to manually click a "Run" button to test it immediately!
+  workflow_dispatch:
+
+# This section tells GitHub WHAT to do
+jobs:
+  update-repo:
+    runs-on: ubuntu-latest
+    
+    # We must explicitly give the bot permission to edit our files
+    permissions:
+      contents: write 
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # REQUIREMENT: A step name must include your exact email
+      - name: Update daily log for 23f2000063@ds.study.iitm.ac.in
+        run: |
+          # This creates a text file and adds today's date into it
+          echo "Automated update on $(date)" >> activity_log.txt
+          
+      - name: Commit and push changes
+        run: |
+          # This logs into Git as a bot and saves the text file to the repository
+          git config --local user.email "23f2000063@ds.study.iitm.ac.in"
+          git config --local user.name "GitHub Action Bot"
+          git add activity_log.txt
+          git commit -m "Automated daily update"
+          git push
 
